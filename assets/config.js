@@ -1,5 +1,5 @@
 window.APP_CONFIG = {
-  API_URL: 'COLE_AQUI_A_URL_DO_SEU_WEB_APP_DO_APPS_SCRIPT',
+  API_URL: 'https://script.google.com/macros/s/AKfycbxJWCtkUOewSnj_cgw7Y4KC421RmXCusr9mVvMe-LrzGci0XHmApC0g55nvLNI1kkAXCA/exec',
   DOWNLOAD_BASE_PATH: 'download/',
   DEFAULT_DOWNLOADS: [
     {

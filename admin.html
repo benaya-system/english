@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Pedagógico - Administração</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="page-shell dashboard-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">PP</div>
+        <div>
+          <h1 class="brand-title">Área administrativa</h1>
+          <p class="brand-subtitle">Cadastro de alunos, responsáveis, desempenho, atividades e downloads.</p>
+        </div>
+      </div>
+      <div class="button-row">
+        <a class="ghost-button" href="index.html">Voltar</a>
+        <button class="ghost-button" type="button" id="admin-logout-button">Sair</button>
+      </div>
+    </header>
+
+    <section id="admin-login-gate" class="card panel hide" style="max-width: 480px; margin: 40px auto;">
+      <h2 style="margin-top: 0;">Entrar na área administrativa</h2>
+      <p class="muted">Use o login de administrador. O setup inicial cria admin / admin@2026.</p>
+      <form id="admin-login-inline" class="field-grid">
+        <label class="field">
+          <span class="field-label">Usuário</span>
+          <input class="input" name="username" required>
+        </label>
+        <label class="field">
+          <span class="field-label">Senha</span>
+          <input class="input" name="password" type="password" required>
+        </label>
+        <div class="button-row">
+          <button class="button" type="submit">Entrar</button>
+        </div>
+      </form>
+    </section>
+
+    <main id="admin-app" class="admin-grid hide">
+      <aside class="admin-column">
+        <section class="list-card">
+          <div class="section-title">
+            <h3>Alunos cadastrados</h3>
+          </div>
+          <input class="input student-search" id="student-search" placeholder="Buscar aluno ou responsável">
+          <div id="admin-student-list"></div>
+        </section>
+
+        <section class="list-card">
+          <div class="section-title">
+            <h3>Registros rápidos</h3>
+          </div>
+          <div id="performance-list" class="mini-list"></div>
+          <hr style="border:0; border-top:1px solid var(--border); margin: 18px 0;">
+          <div id="admin-activities-list" class="mini-list"></div>
+          <hr style="border:0; border-top:1px solid var(--border); margin: 18px 0;">
+          <div id="admin-downloads-list" class="mini-list"></div>
+        </section>
+      </aside>
+
+      <section class="admin-column">
+        <form id="student-form" class="admin-column">
+          <section class="inline-card">
+            <div class="section-title"><h3>Cadastro do aluno</h3></div>
+            <input type="hidden" name="student_id">
+            <input type="hidden" name="guardian_id">
+            <div class="columns-2">
+              <label class="field"><span class="field-label">Nome completo do aluno</span><input class="input" name="full_name" required></label>
+              <label class="field"><span class="field-label">Idade</span><input class="input" name="age"></label>
+            </div>
+            <div class="columns-3">
+              <label class="field"><span class="field-label">Ano/série</span><input class="input" name="school_year"></label>
+              <label class="field"><span class="field-label">Ano de inscrição</span><input class="input" name="year_of_enrollment" value="2026"></label>
+              <label class="field"><span class="field-label">Foto (URL)</span><input class="input" name="photo_url"></label>
+            </div>
+            <div class="columns-2">
+              <label class="field"><span class="field-label">E-mail do aluno</span><input class="input" name="email"></label>
+              <label class="field"><span class="field-label">Telefone do aluno</span><input class="input" name="phone"></label>
+            </div>
+            <label class="checkbox-line"><input type="checkbox" id="self_guardian" name="self_guardian"> O aluno é responsável por si mesmo e usará seus próprios dados como responsável</label>
+          </section>
+
+          <section class="inline-card" id="guardian-fields">
+            <div class="section-title"><h3>Dados do responsável</h3></div>
+            <div class="columns-2">
+              <label class="field"><span class="field-label">Nome completo do responsável</span><input class="input" name="guardian_full_name"></label>
+              <label class="field"><span class="field-label">Relação</span><input class="input" name="guardian_relationship" placeholder="Mãe, pai, avó..."></label>
+            </div>
+            <div class="columns-2">
+              <label class="field"><span class="field-label">E-mail do responsável</span><input class="input" name="guardian_email"></label>
+              <label class="field"><span class="field-label">Telefone do responsável</span><input class="input" name="guardian_phone"></label>
+            </div>
+            <p class="helper-text">Ao salvar, o sistema gera automaticamente o usuário e a senha pelo padrão solicitado.</p>
+          </section>
+
+          <section class="inline-card">
+            <div class="section-title"><h3>Perfil pedagógico</h3></div>
+            <label class="field"><span class="field-label">Título da aba</span><input class="input" name="pedagogical_title" value="Perfil pedagógico"></label>
+            <label class="field"><span class="field-label">Resumo curto</span><textarea class="textarea" name="pedagogical_summary"></textarea></label>
+            <label class="field"><span class="field-label">Perfil completo em markdown leve</span><textarea class="textarea" name="pedagogical_profile_md" style="min-height: 280px;"></textarea></label>
+            <label class="field"><span class="field-label">Destaques para impressão em uma página</span><textarea class="textarea" name="print_highlights_md"></textarea></label>
+            <div class="columns-2">
+              <label class="field"><span class="field-label">Estágio atual</span><input class="input" name="stage_label"></label>
+              <label class="field"><span class="field-label">Prova Cambridge sugerida</span><input class="input" name="recommended_exam"></label>
+            </div>
+            <div id="generated-credentials" class="checkbox-line hide"><strong>Credenciais geradas:</strong> <span id="generated-credentials-text"></span></div>
+            <div class="button-row">
+              <button class="button" type="submit">Salvar cadastro</button>
+            </div>
+          </section>
+        </form>
+
+        <section class="inline-card">
+          <div class="section-title"><h3>Lançar desempenho</h3></div>
+          <form id="performance-form" class="field-grid">
+            <div class="columns-3">
+              <label class="field"><span class="field-label">Data</span><input class="input" type="date" name="assessment_date"></label>
+              <label class="field"><span class="field-label">Score</span><input class="input" name="score" placeholder="0 a 100"></label>
+              <label class="field"><span class="field-label">Rótulo</span><input class="input" name="label" placeholder="Quiz, leitura, speaking..."></label>
+            </div>
+            <div class="columns-2">
+              <label class="field"><span class="field-label">Estágio</span><input class="input" name="stage_label_perf"></label>
+              <label class="field"><span class="field-label">Prova Cambridge</span><input class="input" name="recommended_exam_perf"></label>
+            </div>
+            <label class="field"><span class="field-label">Observação</span><textarea class="textarea" name="note"></textarea></label>
+            <div class="button-row"><button class="soft-button" type="submit">Salvar desempenho</button></div>
+          </form>
+        </section>
+
+        <section class="inline-card">
+          <div class="section-title"><h3>Cadastrar atividade</h3></div>
+          <form id="activity-form" class="field-grid">
+            <div class="columns-3">
+              <label class="field"><span class="field-label">Semana</span><input class="input" name="week_label" placeholder="Semana 1"></label>
+              <label class="field"><span class="field-label">Entrega</span><input class="input" type="date" name="due_date"></label>
+              <label class="field"><span class="field-label">Status</span><input class="input" name="status" value="Pendente"></label>
+            </div>
+            <label class="field"><span class="field-label">Título</span><input class="input" name="title"></label>
+            <label class="field"><span class="field-label">Descrição</span><textarea class="textarea" name="description"></textarea></label>
+            <label class="field"><span class="field-label">Link de apoio</span><input class="input" name="link_url"></label>
+            <div class="button-row"><button class="soft-button" type="submit">Salvar atividade</button></div>
+          </form>
+        </section>
+
+        <section class="inline-card">
+          <div class="section-title"><h3>Cadastrar download</h3></div>
+          <form id="download-form" class="field-grid">
+            <label class="field"><span class="field-label">Título</span><input class="input" name="title"></label>
+            <label class="field"><span class="field-label">Descrição</span><textarea class="textarea" name="description"></textarea></label>
+            <div class="columns-2">
+              <label class="field"><span class="field-label">Nome do arquivo</span><input class="input" name="file_name"></label>
+              <label class="field"><span class="field-label">URL do arquivo</span><input class="input" name="file_url"></label>
+            </div>
+            <div class="columns-2">
+              <label class="field"><span class="field-label">Nome do pacote ZIP</span><input class="input" name="pack_name"></label>
+              <label class="field"><span class="field-label">URL do pacote ZIP</span><input class="input" name="pack_zip_url"></label>
+            </div>
+            <div class="button-row"><button class="soft-button" type="submit">Salvar download</button></div>
+          </form>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/utils.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>

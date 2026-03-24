@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Pedagógico - Perfil do Aluno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="page-shell dashboard-shell">
+    <header class="topbar no-print">
+      <div class="brand">
+        <div class="brand-mark">PP</div>
+        <div>
+          <h1 class="brand-title">Portal Pedagógico</h1>
+          <p class="brand-subtitle">Acompanhamento individual do aluno</p>
+        </div>
+      </div>
+      <div class="button-row">
+        <span class="meta-pill">Responsável: <strong id="guardian-name">...</strong></span>
+        <button class="ghost-button" type="button" id="logout-button">Sair</button>
+      </div>
+    </header>
+
+    <section class="hero-banner card reveal is-visible">
+      <div class="eyebrow">Perfil ativo do aluno</div>
+      <h2 id="student-name">Carregando aluno...</h2>
+      <p id="student-summary">Aguarde enquanto o perfil é carregado.</p>
+      <div class="hero-meta">
+        <span class="meta-pill" id="student-meta">--</span>
+        <span class="meta-pill">Perfil, evolução e materiais da semana</span>
+      </div>
+      <div class="avatar-floating no-print">
+        <div class="avatar-ring">
+          <img id="student-avatar" class="hide" alt="Foto do aluno">
+          <div id="student-avatar-fallback" class="avatar-fallback">--</div>
+        </div>
+        <div class="avatar-caption">Atualizado em uma interface leve e imprimível</div>
+      </div>
+    </section>
+
+    <main class="main-grid">
+      <aside class="sidebar no-print">
+        <section class="student-list reveal" id="student-list-panel">
+          <div class="section-title">
+            <h3>Alunos vinculados</h3>
+          </div>
+          <div id="student-list"></div>
+        </section>
+
+        <section class="info-card reveal">
+          <div class="section-title">
+            <h3>Impressão</h3>
+          </div>
+          <p>O perfil pedagógico foi preparado para caber em uma página no modo de impressão.</p>
+          <div class="button-row">
+            <button class="soft-button" type="button" id="print-profile-button">Imprimir perfil</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="tab-panel reveal">
+        <div class="tab-strip no-print">
+          <button class="tab-button is-active" data-tab="perfil" type="button">Perfil pedagógico</button>
+          <button class="tab-button" data-tab="atividades" type="button">Atividades</button>
+          <button class="tab-button" data-tab="downloads" type="button">Downloads</button>
+        </div>
+
+        <div class="tab-content is-active" id="tab-perfil">
+          <div class="profile-grid">
+            <div class="profile-top">
+              <section class="summary-card reveal" id="summary-card"></section>
+              <section class="graph-card reveal">
+                <div class="section-title">
+                  <h3>Desempenho do aluno</h3>
+                  <span class="badge">Line graph</span>
+                </div>
+                <div class="graph-wrap" id="graph-wrap"></div>
+                <div class="graph-meta">
+                  <div class="metric-box">
+                    <span class="metric-label">Estágio atual</span>
+                    <span class="metric-value" id="graph-stage">--</span>
+                  </div>
+                  <div class="metric-box">
+                    <span class="metric-label">Prova Cambridge sugerida</span>
+                    <span class="metric-value" id="graph-exam">--</span>
+                  </div>
+                  <div class="metric-box">
+                    <span class="metric-label">Observação</span>
+                    <span class="metric-value" id="graph-note">--</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <section class="inline-card reveal">
+              <div class="section-title">
+                <h3>Perfil pedagógico completo</h3>
+              </div>
+              <div id="profile-rich-text"></div>
+            </section>
+
+            <section class="print-only print-sheet">
+              <div class="print-grid">
+                <div id="print-photo" class="print-photo"></div>
+                <div>
+                  <h1 id="print-name"></h1>
+                  <h2 id="print-meta"></h2>
+                  <div class="print-box"><strong>Resumo:</strong> <span id="print-summary"></span></div>
+                  <div class="print-box"><strong>Estágio atual:</strong> <span id="print-stage"></span></div>
+                  <div class="print-box"><strong>Prova Cambridge sugerida:</strong> <span id="print-exam"></span></div>
+                </div>
+              </div>
+              <div class="print-box">
+                <h3>Destaques do perfil</h3>
+                <div id="print-highlights"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-atividades">
+          <section class="inline-card">
+            <div class="section-title">
+              <h3>Atividades da semana</h3>
+              <span class="badge">Planejamento visível</span>
+            </div>
+            <div id="activities-list" class="activity-list"></div>
+          </section>
+        </div>
+
+        <div class="tab-content" id="tab-downloads">
+          <section class="inline-card">
+            <div class="section-title">
+              <h3>Downloads de atividades concluídas</h3>
+              <span class="badge">Arquivos publicados</span>
+            </div>
+            <p class="muted">Você pode baixar arquivo por arquivo ou usar o pacote ZIP quando ele tiver sido publicado.</p>
+            <div class="button-row no-print">
+              <button class="soft-button" type="button" id="download-selected-button">Baixar selecionados</button>
+              <button class="ghost-button hide" type="button" id="download-package-button">Baixar pacote ZIP</button>
+            </div>
+            <div id="downloads-list" class="download-list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/utils.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

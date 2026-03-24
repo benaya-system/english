@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Pedagógico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">PP</div>
+        <div>
+          <h1 class="brand-title">Portal Pedagógico</h1>
+          <p class="brand-subtitle">Perfis de alunos, desempenho, atividades e downloads.</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="auth-layout">
+      <section class="hero-card card reveal is-visible">
+        <div class="eyebrow">Google Sheets + Apps Script + GitHub Pages</div>
+        <h2>Uma área leve e elegante para responsáveis acompanharem o aluno.</h2>
+        <p>
+          O portal reúne perfil pedagógico, evolução de desempenho, tarefas da semana e arquivos concluídos em uma interface clara, rápida e fácil de manter.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <strong>Perfil pedagógico imprimível</strong>
+            <span>Resumo bonito, legível e pronto para impressão em uma página.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Desempenho visual</strong>
+            <span>Gráfico de linha leve com observação, estágio atual e prova Cambridge indicada.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Área administrativa</strong>
+            <span>Cadastro de aluno, responsável, desempenho, atividades e links de download.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Estrutura rápida</strong>
+            <span>Sem dependências pesadas, focada em internet limitada e manutenção simples.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card card reveal is-visible">
+        <div class="auth-tabs">
+          <button class="auth-tab is-active" data-auth-tab="guardian" type="button">Acesso do responsável</button>
+          <button class="auth-tab" data-auth-tab="admin" type="button">Acesso administrativo</button>
+        </div>
+
+        <div data-auth-panel="guardian">
+          <h3>Entrar como responsável</h3>
+          <p>Usuário: primeiro nome em minúsculo. Senha: primeiro nome + @ + ano de inscrição.</p>
+          <form id="guardian-login-form" class="field-grid">
+            <label class="field">
+              <span class="field-label">Usuário</span>
+              <input class="input" name="username" placeholder="kellen" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Senha</span>
+              <input class="input" name="password" type="password" placeholder="kellen@2026" required>
+            </label>
+            <div class="button-row">
+              <button class="button" type="submit">Entrar</button>
+            </div>
+          </form>
+        </div>
+
+        <div data-auth-panel="admin" class="hide">
+          <h3>Entrar na área administrativa</h3>
+          <p>Use o acesso de administrador para cadastrar alunos, responsáveis, desempenho, atividades e downloads.</p>
+          <form id="admin-login-form" class="field-grid">
+            <label class="field">
+              <span class="field-label">Usuário</span>
+              <input class="input" name="username" placeholder="admin" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Senha</span>
+              <input class="input" name="password" type="password" placeholder="admin@2026" required>
+            </label>
+            <div class="button-row">
+              <button class="button" type="submit">Entrar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/utils.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/login.js"></script>
+</body>
+</html>

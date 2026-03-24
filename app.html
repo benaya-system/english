@@ -26,19 +26,20 @@
     </header>
 
     <section class="hero-banner card reveal is-visible">
-      <div class="eyebrow">Perfil ativo do aluno</div>
-      <h2 id="student-name">Carregando aluno...</h2>
-      <p id="student-summary">Aguarde enquanto o perfil é carregado.</p>
-      <div class="hero-meta">
-        <span class="meta-pill" id="student-meta">--</span>
-        <span class="meta-pill">Perfil, evolução e materiais da semana</span>
+      <div class="hero-copy">
+        <div class="eyebrow">Perfil do aluno</div>
+        <h2 id="student-name">Carregando aluno...</h2>
+        <p id="student-summary">Aguarde enquanto o perfil é carregado.</p>
+        <div class="hero-meta">
+          <span class="meta-pill" id="student-meta">--</span>
+          <span class="meta-pill">Perfil, evolução e materiais</span>
+        </div>
       </div>
       <div class="avatar-floating no-print">
         <div class="avatar-ring">
           <img id="student-avatar" class="hide" alt="Foto do aluno">
           <div id="student-avatar-fallback" class="avatar-fallback">--</div>
         </div>
-        <div class="avatar-caption">Atualizado em uma interface leve e imprimível</div>
       </div>
     </section>
 
@@ -53,9 +54,9 @@
 
         <section class="info-card reveal">
           <div class="section-title">
-            <h3>Impressão</h3>
+            <h3>Relatório</h3>
           </div>
-          <p>O perfil pedagógico foi preparado para caber em uma página no modo de impressão.</p>
+          <p>Use o botão abaixo para gerar uma versão de impressão mais limpa e organizada do perfil.</p>
           <div class="button-row">
             <button class="soft-button" type="button" id="print-profile-button">Imprimir perfil</button>
           </div>
@@ -75,8 +76,8 @@
               <section class="summary-card reveal" id="summary-card"></section>
               <section class="graph-card reveal">
                 <div class="section-title">
-                  <h3>Desempenho do aluno</h3>
-                  <span class="badge">Line graph</span>
+                  <h3>Evolução do aluno</h3>
+                  <span class="badge">Desempenho</span>
                 </div>
                 <div class="graph-wrap" id="graph-wrap"></div>
                 <div class="graph-meta">
@@ -104,19 +105,48 @@
             </section>
 
             <section class="print-only print-sheet">
-              <div class="print-grid">
-                <div id="print-photo" class="print-photo"></div>
-                <div>
-                  <h1 id="print-name"></h1>
-                  <h2 id="print-meta"></h2>
-                  <div class="print-box"><strong>Resumo:</strong> <span id="print-summary"></span></div>
-                  <div class="print-box"><strong>Estágio atual:</strong> <span id="print-stage"></span></div>
-                  <div class="print-box"><strong>Prova Cambridge sugerida:</strong> <span id="print-exam"></span></div>
+              <div class="print-header">
+                <div class="print-student-block">
+                  <div id="print-photo" class="print-photo"></div>
+                  <div class="print-identity">
+                    <div class="print-kicker">Relatório pedagógico</div>
+                    <h1 id="print-name"></h1>
+                    <p id="print-meta"></p>
+                    <div class="print-chip-row">
+                      <div class="print-chip"><strong>Estágio:</strong> <span id="print-stage"></span></div>
+                      <div class="print-chip"><strong>Cambridge:</strong> <span id="print-exam"></span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="print-graph-card">
+                  <h3>Evolução de desempenho</h3>
+                  <div id="print-graph"></div>
+                  <p id="print-note"></p>
                 </div>
               </div>
-              <div class="print-box">
-                <h3>Destaques do perfil</h3>
-                <div id="print-highlights"></div>
+
+              <section class="print-summary-box">
+                <h2>Resumo pedagógico</h2>
+                <p id="print-summary"></p>
+              </section>
+
+              <div class="print-columns">
+                <section class="print-card">
+                  <h3>Visão geral</h3>
+                  <p id="print-overview"></p>
+                </section>
+                <section class="print-card">
+                  <h3>Como aprende melhor</h3>
+                  <div id="print-learn"></div>
+                </section>
+                <section class="print-card">
+                  <h3>Feedback mais adequado</h3>
+                  <div id="print-feedback"></div>
+                </section>
+                <section class="print-card">
+                  <h3>Cuidados importantes</h3>
+                  <div id="print-avoid"></div>
+                </section>
               </div>
             </section>
           </div>
@@ -126,7 +156,7 @@
           <section class="inline-card">
             <div class="section-title">
               <h3>Atividades da semana</h3>
-              <span class="badge">Planejamento visível</span>
+              <span class="badge">Planejamento</span>
             </div>
             <div id="activities-list" class="activity-list"></div>
           </section>
@@ -135,12 +165,12 @@
         <div class="tab-content" id="tab-downloads">
           <section class="inline-card">
             <div class="section-title">
-              <h3>Downloads de atividades concluídas</h3>
-              <span class="badge">Arquivos publicados</span>
+              <h3>Downloads</h3>
+              <span class="badge">Arquivos disponíveis</span>
             </div>
-            <p class="muted">Você pode baixar arquivo por arquivo ou usar o pacote ZIP quando ele tiver sido publicado.</p>
-            <div class="button-row no-print">
-              <button class="soft-button" type="button" id="download-selected-button">Baixar selecionados</button>
+            <p class="muted">Você pode baixar os arquivos individualmente ou abrir o pacote completo quando ele estiver disponível.</p>
+            <div class="button-row no-print download-actions">
+              <button class="soft-button" type="button" id="download-selected-button">Baixar marcados</button>
               <button class="ghost-button hide" type="button" id="download-package-button">Baixar pacote ZIP</button>
             </div>
             <div id="downloads-list" class="download-list"></div>

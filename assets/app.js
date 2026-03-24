@@ -38,9 +38,14 @@
     printMeta: U.qs('#print-meta'),
     printPhoto: U.qs('#print-photo'),
     printSummary: U.qs('#print-summary'),
-    printHighlights: U.qs('#print-highlights'),
     printStage: U.qs('#print-stage'),
-    printExam: U.qs('#print-exam')
+    printExam: U.qs('#print-exam'),
+    printGraph: U.qs('#print-graph'),
+    printNote: U.qs('#print-note'),
+    printOverview: U.qs('#print-overview'),
+    printLearn: U.qs('#print-learn'),
+    printFeedback: U.qs('#print-feedback'),
+    printAvoid: U.qs('#print-avoid')
   };
 
   async function init() {
@@ -144,7 +149,7 @@
     nodes.summaryCard.innerHTML = `
       <div class="section-title">
         <h3>${U.escapeHtml(student.pedagogical_title || 'Perfil pedagógico')}</h3>
-        <span class="badge">Resumo do momento</span>
+        <span class="badge">Visão geral</span>
       </div>
       <p>${U.escapeHtml(student.pedagogical_summary || 'Sem resumo cadastrado.')}</p>
       <div class="button-row no-print">
@@ -156,9 +161,62 @@
     nodes.profileRichText.innerHTML = `<div class="rich-text">${U.markdownLite(student.pedagogical_profile_md)}</div>`;
     renderGraph(bundle.performance || [], bundle.stage, bundle.recommended_exam);
     renderActivities(bundle.activities || []);
-    renderDownloads(bundle.downloads || []);
+    renderDownloads(normalizeDownloads(bundle.downloads || [], student.student_id));
     renderPrintSheet(bundle);
     activateTab('perfil');
+  }
+
+  function buildLineGraphSvg(performance, options = {}) {
+    const pointsData = performance || [];
+    if (!pointsData.length) {
+      return `<div class="muted">Ainda não há registros de desempenho.</div>`;
+    }
+
+    const width = options.width || 560;
+    const height = options.height || 220;
+    const padding = options.padding || 28;
+    const lineColor = options.lineColor || '#72aee5';
+    const textColor = options.textColor || '#46729a';
+    const gridColor = options.gridColor || '#dce9f5';
+    const gradientId = options.gradientId || `lineFill${Date.now()}`;
+    const labelMode = options.labelMode || 'full';
+
+    const points = pointsData.map((item, index) => {
+      const x = padding + ((width - padding * 2) / Math.max(pointsData.length - 1, 1)) * index;
+      const y = height - padding - ((height - padding * 2) * (Number(item.score || 0) / 100));
+      return { x, y, score: item.score, date: item.assessment_date || '', label: item.label || '' };
+    });
+
+    const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`).join(' ');
+    const circles = points.map((point) => `
+      <circle cx="${point.x}" cy="${point.y}" r="4.5"></circle>
+      <text x="${point.x}" y="${point.y - 10}" font-size="10" text-anchor="middle">${U.escapeHtml(String(point.score))}</text>
+    `).join('');
+    const labels = points.map((point) => {
+      const label = labelMode === 'short' ? U.formatDateBR(point.date).slice(0, 5) : U.formatDateBR(point.date).slice(0, 5);
+      return `<text x="${point.x}" y="${height - 8}" font-size="10" text-anchor="middle">${U.escapeHtml(label || '')}</text>`;
+    }).join('');
+
+    return `
+      <svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" aria-label="Gráfico de desempenho">
+        <defs>
+          <linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(114, 174, 229, 0.22)"></stop>
+            <stop offset="100%" stop-color="rgba(114, 174, 229, 0)"></stop>
+          </linearGradient>
+        </defs>
+        <g stroke="${gridColor}" stroke-width="1">
+          <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}"></line>
+          <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}"></line>
+          <line x1="${padding}" y1="${padding + 32}" x2="${width - padding}" y2="${padding + 32}"></line>
+          <line x1="${padding}" y1="${padding + 68}" x2="${width - padding}" y2="${padding + 68}"></line>
+          <line x1="${padding}" y1="${padding + 104}" x2="${width - padding}" y2="${padding + 104}"></line>
+        </g>
+        <path d="${path} L ${width - padding},${height - padding} L ${padding},${height - padding} Z" fill="url(#${gradientId})"></path>
+        <path d="${path}" fill="none" stroke="${lineColor}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+        <g fill="${textColor}" font-family="Inter, sans-serif">${circles}${labels}</g>
+      </svg>
+    `;
   }
 
   function renderGraph(performance, stage, exam) {
@@ -170,46 +228,7 @@
       return;
     }
 
-    const width = 560;
-    const height = 220;
-    const padding = 28;
-    const scores = performance.map((item) => Number(item.score || 0));
-    const points = performance.map((item, index) => {
-      const x = padding + ((width - padding * 2) / Math.max(performance.length - 1, 1)) * index;
-      const y = height - padding - ((height - padding * 2) * (Number(item.score || 0) / 100));
-      return { x, y, label: item.label, score: item.score, date: item.assessment_date };
-    });
-
-    const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`).join(' ');
-    const circles = points.map((point) => `
-      <circle cx="${point.x}" cy="${point.y}" r="5"></circle>
-      <text x="${point.x}" y="${point.y - 12}" font-size="11" text-anchor="middle">${U.escapeHtml(String(point.score))}</text>
-    `).join('');
-    const labels = points.map((point) => `
-      <text x="${point.x}" y="${height - 8}" font-size="11" text-anchor="middle">${U.escapeHtml(U.formatDateBR(point.date).slice(0, 5))}</text>
-    `).join('');
-
-    nodes.graphWrap.innerHTML = `
-      <svg viewBox="0 0 ${width} ${height}" width="100%" height="220" aria-label="Gráfico de desempenho">
-        <defs>
-          <linearGradient id="lineFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="rgba(114, 174, 229, 0.22)"></stop>
-            <stop offset="100%" stop-color="rgba(114, 174, 229, 0)"></stop>
-          </linearGradient>
-        </defs>
-        <g stroke="#dce9f5" stroke-width="1">
-          <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}"></line>
-          <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}"></line>
-          <line x1="${padding}" y1="${padding + 40}" x2="${width - padding}" y2="${padding + 40}"></line>
-          <line x1="${padding}" y1="${padding + 82}" x2="${width - padding}" y2="${padding + 82}"></line>
-          <line x1="${padding}" y1="${padding + 124}" x2="${width - padding}" y2="${padding + 124}"></line>
-        </g>
-        <path d="${path} L ${width - padding},${height - padding} L ${padding},${height - padding} Z" fill="url(#lineFill)"></path>
-        <path d="${path}" fill="none" stroke="#72aee5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
-        <g fill="#46729a" font-family="Inter, sans-serif">${circles}${labels}</g>
-      </svg>
-    `;
-
+    nodes.graphWrap.innerHTML = buildLineGraphSvg(performance, { width: 560, height: 220, padding: 28, gradientId: 'screenLineFill' });
     const latest = performance[performance.length - 1];
     nodes.graphStage.textContent = stage || latest.stage_label || '--';
     nodes.graphExam.textContent = exam || latest.recommended_exam || '--';
@@ -237,23 +256,66 @@
     revealOnScroll();
   }
 
+  function getConfiguredDefaultDownloads(studentId) {
+    const defaults = Array.isArray(window.APP_CONFIG && window.APP_CONFIG.DEFAULT_DOWNLOADS) ? window.APP_CONFIG.DEFAULT_DOWNLOADS : [];
+    return defaults.map((item, index) => ({
+      download_id: `DEFAULT-${studentId || 'STU'}-${index + 1}`,
+      student_id: studentId || '',
+      title: item.title || `Arquivo ${index + 1}`,
+      description: item.description || '',
+      file_name: item.file_name || '',
+      file_url: item.file_url || '',
+      pack_name: item.pack_name || 'Pacote inicial',
+      pack_zip_url: item.pack_zip_url || '',
+      active: 'true'
+    }));
+  }
+
+  function resolveDownloadUrl(item) {
+    const rawUrl = String(item.file_url || '').trim();
+    if (rawUrl && !/SEU-USUARIO|COLE_AQUI/i.test(rawUrl)) return rawUrl;
+    const fileName = String(item.file_name || '').trim();
+    if (!fileName) return '';
+    const basePath = (window.APP_CONFIG && window.APP_CONFIG.DOWNLOAD_BASE_PATH) || 'download/';
+    return `${basePath.replace(/\/?$/, '/')}${fileName}`;
+  }
+
+  function normalizeDownloads(downloads, studentId) {
+    const validCustom = (downloads || [])
+      .filter((item) => String(item.active || 'true') !== 'false')
+      .filter((item) => !/SEU-USUARIO|COLE_AQUI/i.test(String(item.file_url || '')))
+      .map((item) => Object.assign({}, item, { file_url: resolveDownloadUrl(item) }))
+      .filter((item) => item.file_url);
+
+    const merged = [...validCustom, ...getConfiguredDefaultDownloads(studentId)];
+    const seen = new Set();
+    return merged.filter((item) => {
+      const key = `${item.file_name || ''}|${item.file_url || ''}`.toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
   function renderDownloads(downloads) {
+    state.bundle.downloads = downloads;
     if (!downloads.length) {
       nodes.downloads.innerHTML = '<p class="muted">Nenhum arquivo publicado ainda.</p>';
       nodes.packageButton.classList.add('hide');
       return;
     }
+
     nodes.downloads.innerHTML = downloads.map((item) => `
       <article class="download-item reveal">
         <label class="download-check">
           <input type="checkbox" class="download-selector" value="${U.escapeHtml(item.download_id)}">
-          <div>
+          <div class="download-body">
             <div class="item-header">
               <div>
                 <h4 class="item-title">${U.escapeHtml(item.title)}</h4>
                 <span class="muted">${U.escapeHtml(item.file_name || '')}</span>
               </div>
-              <span class="badge">${U.escapeHtml(item.pack_name || 'Arquivo avulso')}</span>
+              <span class="badge">${U.escapeHtml(item.pack_name || 'Arquivo')}</span>
             </div>
             <p>${U.escapeHtml(item.description || '')}</p>
             <div class="button-row">
@@ -264,9 +326,9 @@
       </article>
     `).join('');
 
-    const hasPackage = downloads.some((item) => item.pack_zip_url);
-    nodes.packageButton.classList.toggle('hide', !hasPackage);
-    nodes.packageButton.dataset.packageUrls = JSON.stringify(downloads.filter((item) => item.pack_zip_url).map((item) => item.pack_zip_url));
+    const packageUrls = downloads.map((item) => String(item.pack_zip_url || '').trim()).filter(Boolean);
+    nodes.packageButton.classList.toggle('hide', !packageUrls.length);
+    nodes.packageButton.dataset.packageUrls = JSON.stringify([...new Set(packageUrls)]);
     revealOnScroll();
   }
 
@@ -291,19 +353,102 @@
     window.open(urls[0], '_blank', 'noopener');
   }
 
+  function normalizeText(text) {
+    return String(text || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  function parseProfileSections(md) {
+    const lines = String(md || '').split(/\r?\n/);
+    const sections = [];
+    let current = null;
+
+    function pushCurrent() {
+      if (!current) return;
+      sections.push({
+        title: current.title,
+        paragraphs: current.paragraphs.filter(Boolean),
+        bullets: current.bullets.filter(Boolean)
+      });
+    }
+
+    lines.forEach((raw) => {
+      const line = String(raw || '').trim();
+      if (!line) return;
+      if (line.startsWith('## ')) {
+        pushCurrent();
+        current = { title: line.replace(/^##\s+/, ''), paragraphs: [], bullets: [] };
+        return;
+      }
+      if (!current) {
+        current = { title: 'Resumo', paragraphs: [], bullets: [] };
+      }
+      if (line.startsWith('- ')) {
+        current.bullets.push(line.replace(/^-\s+/, '').replace(/^“|”$/g, ''));
+      } else {
+        current.paragraphs.push(line);
+      }
+    });
+    pushCurrent();
+    return sections;
+  }
+
+  function findSection(sections, keywords) {
+    const lookups = keywords.map(normalizeText);
+    return sections.find((section) => lookups.some((key) => normalizeText(section.title).includes(key)));
+  }
+
+  function firstSentences(text, count) {
+    const chunks = String(text || '').match(/[^.!?]+[.!?]?/g) || [];
+    return chunks.slice(0, count).join(' ').trim() || String(text || '').trim();
+  }
+
+  function listHtml(items, maxItems) {
+    const safe = (items || []).filter(Boolean).slice(0, maxItems);
+    if (!safe.length) return '<p class="print-empty">Sem observações cadastradas.</p>';
+    return `<ul class="print-list">${safe.map((item) => `<li>${U.escapeHtml(item)}</li>`).join('')}</ul>`;
+  }
+
+  function extractSectionBullets(section, fallbackItems, maxItems) {
+    const list = (section && section.bullets && section.bullets.length) ? section.bullets : (fallbackItems || []);
+    return listHtml(list, maxItems);
+  }
+
   function renderPrintSheet(bundle) {
     const student = bundle.student;
+    const performance = bundle.performance || [];
+    const sections = parseProfileSections(student.pedagogical_profile_md);
+    const overview = findSection(sections, ['visao geral']) || { paragraphs: [student.pedagogical_summary || ''] };
+    const learn = findSection(sections, ['o que tende a funcionar melhor', 'marcas principais']);
+    const feedback = findSection(sections, ['estilo de feedback ideal']);
+    const avoid = findSection(sections, ['o que evitar']);
+    const highlightBullets = parseProfileSections(`## Destaques
+${student.print_highlights_md || ''}`)[0]?.bullets || [];
+    const latest = performance.length ? performance[performance.length - 1] : null;
+
     nodes.printName.textContent = student.full_name;
-    nodes.printMeta.textContent = `${student.age || '--'} anos | ${student.school_year || '--'} | ${bundle.stage || student.stage_label || '--'}`;
+    nodes.printMeta.textContent = `${student.age || '--'} anos | ${student.school_year || '--'}`;
     nodes.printSummary.textContent = student.pedagogical_summary || '';
-    nodes.printHighlights.innerHTML = U.markdownLite(student.print_highlights_md || 'Sem destaques cadastrados.');
     nodes.printStage.textContent = bundle.stage || student.stage_label || '--';
     nodes.printExam.textContent = bundle.recommended_exam || student.recommended_exam || '--';
+    nodes.printOverview.textContent = firstSentences((overview.paragraphs || []).join(' '), 2) || student.pedagogical_summary || '';
+    nodes.printLearn.innerHTML = extractSectionBullets(learn, highlightBullets, 5);
+    nodes.printFeedback.innerHTML = extractSectionBullets(feedback, highlightBullets.slice(0, 4), 4);
+    nodes.printAvoid.innerHTML = extractSectionBullets(avoid, highlightBullets.slice(2), 4);
+    nodes.printNote.textContent = latest && latest.note ? latest.note : 'Sem observação registrada.';
+
     if (student.photo_url) {
       nodes.printPhoto.innerHTML = `<img src="${U.escapeHtml(student.photo_url)}" alt="${U.escapeHtml(student.full_name)}">`;
     } else {
       nodes.printPhoto.innerHTML = `<div class="avatar-fallback">${U.escapeHtml(U.initials(student.full_name))}</div>`;
     }
+
+    nodes.printGraph.innerHTML = performance.length
+      ? buildLineGraphSvg(performance, { width: 300, height: 150, padding: 22, gradientId: 'printLineFill', labelMode: 'short' })
+      : '<p class="print-empty">Ainda não há registros de desempenho.</p>';
   }
 
   function revealOnScroll() {

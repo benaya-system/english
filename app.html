@@ -115,30 +115,35 @@
                 </div>
               </div>
 
-              <div class="print-top-grid">
-                <div class="print-card print-identification">
+              <div class="print-hero-grid">
+                <section class="print-card print-identification">
                   <div id="print-photo" class="print-photo"></div>
                   <div class="print-identity-text">
-                    <div class="print-chip"><strong>Estágio:</strong> <span id="print-stage"></span></div>
-                    <div class="print-chip"><strong>Cambridge:</strong> <span id="print-exam"></span></div>
+                    <div class="print-chip-row">
+                      <div class="print-chip"><strong>Estágio</strong><span id="print-stage"></span></div>
+                      <div class="print-chip"><strong>Cambridge</strong><span id="print-exam"></span></div>
+                    </div>
                     <p id="print-summary"></p>
                   </div>
-                </div>
+                </section>
 
-                <div class="print-card print-graph-card">
-                  <h3>Evolução de desempenho</h3>
+                <section class="print-card print-graph-card">
+                  <div class="print-card-head">
+                    <h3>Evolução de desempenho</h3>
+                  </div>
                   <div id="print-graph"></div>
                   <p id="print-note"></p>
-                </div>
+                </section>
               </div>
 
-              <div class="print-grid">
+              <section class="print-card print-summary-card">
+                <h3>Leitura pedagógica</h3>
+                <p id="print-overview"></p>
+              </section>
+
+              <div class="print-triad">
                 <section class="print-card">
-                  <h3>Visão geral</h3>
-                  <p id="print-overview"></p>
-                </section>
-                <section class="print-card">
-                  <h3>Estratégias que ajudam</h3>
+                  <h3>Como ela aprende melhor</h3>
                   <div id="print-strategies"></div>
                 </section>
                 <section class="print-card">
@@ -146,14 +151,15 @@
                   <div id="print-feedback"></div>
                 </section>
                 <section class="print-card">
-                  <h3>Cuidados importantes</h3>
+                  <h3>Cuidados essenciais</h3>
                   <div id="print-avoid"></div>
                 </section>
-                <section class="print-card print-card-full">
-                  <h3>Destaques rápidos</h3>
-                  <div id="print-highlights"></div>
-                </section>
               </div>
+
+              <section class="print-card print-highlights-card">
+                <h3>Destaques rápidos</h3>
+                <div id="print-highlights" class="print-highlights-grid"></div>
+              </section>
             </section>
           </div>
         </div>

@@ -415,6 +415,38 @@
     }
   }
 
+
+  function compactText(text, maxChars) {
+    const clean = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!clean) return '';
+    if (!maxChars || clean.length <= maxChars) return clean;
+    const cut = clean.slice(0, maxChars - 1);
+    const lastSpace = cut.lastIndexOf(' ');
+    const safe = lastSpace > 30 ? cut.slice(0, lastSpace) : cut;
+    return `${safe.trim()}…`;
+  }
+
+  function compactSentences(text, maxSentences, maxChars) {
+    const clean = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!clean) return '';
+    const sentences = clean.match(/[^.!?]+[.!?]?/g) || [clean];
+    const picked = sentences.slice(0, Math.max(1, maxSentences || 2)).join(' ').trim();
+    return compactText(picked, maxChars || 320);
+  }
+
+  function normalizeList(items, maxItems, maxCharsEach) {
+    return (items || [])
+      .filter(Boolean)
+      .map((item) => compactText(item, maxCharsEach || 120))
+      .slice(0, Math.max(0, maxItems || 4));
+  }
+
+  function buildHighlightTags(items) {
+    const safe = normalizeList(items, 5, 90);
+    if (!safe.length) return '<p class="muted">Sem destaques cadastrados.</p>';
+    return safe.map((item) => `<span class="print-highlight-tag">${U.escapeHtml(item)}</span>`).join('');
+  }
+
   function renderPrintSheet(bundle) {
     const student = bundle.student || {};
     const sections = U.parseMarkdownSections(student.pedagogical_profile_md || '');
@@ -424,24 +456,30 @@
     const avoid = U.pickSection(sections, ['evitar', 'cuidados']);
     const highlights = String(student.print_highlights_md || '')
       .split(/\r?\n/)
-      .map((line) => line.trim().replace(/^- /, ''))
+      .map((line) => line.trim().replace(/^-\s*/, ''))
       .filter(Boolean);
+    const performance = bundle.performance || [];
+    const latest = performance.length ? performance[performance.length - 1] : null;
+    const summaryText = compactText(student.pedagogical_summary || '', 175);
+    const overviewText = compactSentences(U.textWithoutBullets(overview ? overview.text : student.pedagogical_summary || ''), 2, 320);
+    const strategyItems = normalizeList((strategies && strategies.bullets.length ? strategies.bullets : highlights.slice(0, 4)), 4, 92);
+    const feedbackItems = normalizeList((feedback && feedback.bullets.length ? feedback.bullets : highlights.slice(0, 3)), 3, 88);
+    const avoidItems = normalizeList((avoid && avoid.bullets.length ? avoid.bullets : highlights.slice(-3)), 3, 88);
+    const highlightItems = normalizeList(highlights, 5, 86);
 
     nodes.printDate.textContent = new Intl.DateTimeFormat('pt-BR').format(new Date());
     nodes.printName.textContent = student.full_name || '';
     nodes.printMeta.textContent = `${student.age || '--'} anos • ${student.school_year || '--'}`;
-    nodes.printSummary.textContent = student.pedagogical_summary || '';
+    nodes.printSummary.textContent = summaryText || 'Sem síntese pedagógica cadastrada.';
     nodes.printStage.textContent = bundle.stage || student.stage_label || '--';
     nodes.printExam.textContent = bundle.recommended_exam || student.recommended_exam || '--';
-    nodes.printNote.textContent = bundle.performance && bundle.performance.length && bundle.performance[bundle.performance.length - 1].note
-      ? bundle.performance[bundle.performance.length - 1].note
-      : 'Sem observação adicional registrada nesta etapa.';
-    nodes.printGraph.innerHTML = buildLineGraphSvg(bundle.performance || [], { width: 520, height: 170 });
-    nodes.printOverview.textContent = U.textWithoutBullets(overview ? overview.text : student.pedagogical_summary || '');
-    nodes.printStrategies.innerHTML = U.bulletListHtml((strategies && strategies.bullets.length ? strategies.bullets : highlights.slice(0, 6)));
-    nodes.printFeedback.innerHTML = U.bulletListHtml((feedback && feedback.bullets.length ? feedback.bullets : highlights.slice(0, 4)));
-    nodes.printAvoid.innerHTML = U.bulletListHtml((avoid && avoid.bullets.length ? avoid.bullets : highlights.slice(-4)));
-    nodes.printHighlights.innerHTML = U.bulletListHtml(highlights);
+    nodes.printNote.textContent = compactText(latest && latest.note ? latest.note : 'Sem observação adicional registrada nesta etapa.', 150);
+    nodes.printGraph.innerHTML = buildLineGraphSvg(performance, { width: 500, height: 132 });
+    nodes.printOverview.textContent = overviewText || summaryText || 'Sem leitura pedagógica cadastrada.';
+    nodes.printStrategies.innerHTML = U.bulletListHtml(strategyItems);
+    nodes.printFeedback.innerHTML = U.bulletListHtml(feedbackItems);
+    nodes.printAvoid.innerHTML = U.bulletListHtml(avoidItems);
+    nodes.printHighlights.innerHTML = buildHighlightTags(highlightItems);
 
     nodes.printPhoto.innerHTML = student.photo_url
       ? `<img src="${U.escapeHtml(student.photo_url)}" alt="${U.escapeHtml(student.full_name || 'Aluno')}">`

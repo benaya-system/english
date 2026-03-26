@@ -11,13 +11,12 @@
     students: []
   };
 
-  let loginBound = false;
-
   const nodes = {
     logout: U.qs('#admin-logout-button'),
     studentList: U.qs('#admin-student-list'),
     studentSearch: U.qs('#student-search'),
     studentForm: U.qs('#student-form'),
+    newStudent: U.qs('#new-student-button'),
     performanceForm: U.qs('#performance-form'),
     activityForm: U.qs('#activity-form'),
     downloadForm: U.qs('#download-form'),
@@ -27,8 +26,13 @@
     credentialsText: U.qs('#generated-credentials-text'),
     performanceList: U.qs('#performance-list'),
     activitiesList: U.qs('#admin-activities-list'),
-    downloadsList: U.qs('#admin-downloads-list')
+    downloadsList: U.qs('#admin-downloads-list'),
+    teacherPlanPreview: U.qs('#teacher-plan-preview'),
+    filePreview: U.qs('#download-file-preview'),
+    zipPreview: U.qs('#download-zip-preview')
   };
+
+  let loginBound = false;
 
   function bindCommon() {
     nodes.logout.addEventListener('click', async () => {
@@ -46,16 +50,24 @@
     });
 
     nodes.studentSearch.addEventListener('input', () => renderStudentButtons(nodes.studentSearch.value.trim().toLowerCase()));
+    nodes.newStudent.addEventListener('click', () => resetStudentForm());
 
     nodes.studentForm.addEventListener('submit', saveStudent);
     nodes.performanceForm.addEventListener('submit', savePerformance);
     nodes.activityForm.addEventListener('submit', saveActivity);
     nodes.downloadForm.addEventListener('submit', saveDownload);
+
+    ['file_base_name', 'file_type', 'pack_base_name'].forEach((field) => {
+      nodes.downloadForm[field].addEventListener('input', renderDownloadPreview);
+      nodes.downloadForm[field].addEventListener('change', renderDownloadPreview);
+    });
   }
 
   async function bootstrap() {
     bindCommon();
     bindLoginGate();
+    renderDownloadPreview();
+
     if (!session || session.role !== 'admin') {
       loginGate.classList.remove('hide');
       adminApp.classList.add('hide');
@@ -95,7 +107,13 @@
       const response = await window.AppApi.get('adminListStudents', { token: state.token });
       state.students = response.students || [];
       renderStudentButtons('');
-      if (state.students[0]) await loadStudent(state.students[0].student_id);
+      if (state.currentStudentId) {
+        await loadStudent(state.currentStudentId);
+      } else if (state.students[0]) {
+        await loadStudent(state.students[0].student_id);
+      } else {
+        resetStudentForm();
+      }
     } catch (error) {
       U.toast(error.message, 'error');
       U.clearSession();
@@ -120,25 +138,42 @@
     });
   }
 
+  function resetStudentForm() {
+    state.currentStudentId = '';
+    nodes.studentForm.reset();
+    nodes.studentForm.student_id.value = '';
+    nodes.studentForm.guardian_id.value = '';
+    nodes.studentForm.year_of_enrollment.value = String(new Date().getFullYear());
+    nodes.studentForm.pedagogical_title.value = 'Perfil pedagógico';
+    nodes.guardianFields.classList.remove('hide');
+    nodes.credentialsBox.classList.add('hide');
+    nodes.teacherPlanPreview.innerHTML = '<p class="muted">Sem plano cadastrado.</p>';
+    nodes.performanceList.innerHTML = '<p class="muted">Selecione ou salve um aluno para ver os registros.</p>';
+    nodes.activitiesList.innerHTML = '<p class="muted">Selecione ou salve um aluno para ver as atividades.</p>';
+    nodes.downloadsList.innerHTML = '<p class="muted">Selecione ou salve um aluno para ver os downloads.</p>';
+    renderStudentButtons(nodes.studentSearch.value.trim().toLowerCase());
+    renderDownloadPreview();
+  }
+
   async function loadStudent(studentId) {
     state.currentStudentId = studentId;
     renderStudentButtons(nodes.studentSearch.value.trim().toLowerCase());
     try {
       const response = await window.AppApi.get('adminGetStudent', { token: state.token, student_id: studentId });
-      fillStudentForm(response.student, response.guardian);
+      fillStudentForm(response.student, response.guardian, response.teacher_plan);
       renderMiniLists(response);
     } catch (error) {
       U.toast(error.message, 'error');
     }
   }
 
-  function fillStudentForm(student, guardian) {
+  function fillStudentForm(student, guardian, teacherPlan) {
     const form = nodes.studentForm;
     form.student_id.value = student.student_id || '';
     form.full_name.value = student.full_name || '';
     form.age.value = student.age || '';
     form.school_year.value = student.school_year || '';
-    form.year_of_enrollment.value = student.year_of_enrollment || '2026';
+    form.year_of_enrollment.value = student.year_of_enrollment || String(new Date().getFullYear());
     form.photo_url.value = student.photo_url || '';
     form.email.value = student.email || '';
     form.phone.value = student.phone || '';
@@ -149,6 +184,7 @@
     form.print_highlights_md.value = student.print_highlights_md || '';
     form.stage_label.value = student.stage_label || '';
     form.recommended_exam.value = student.recommended_exam || '';
+    form.teacher_action_plan_md.value = teacherPlan && teacherPlan.teacher_action_plan_md ? teacherPlan.teacher_action_plan_md : '';
 
     form.guardian_id.value = guardian && guardian.guardian_id ? guardian.guardian_id : '';
     form.guardian_full_name.value = guardian && guardian.full_name ? guardian.full_name : '';
@@ -157,6 +193,10 @@
     form.guardian_relationship.value = guardian && guardian.relationship ? guardian.relationship : '';
     nodes.guardianFields.classList.toggle('hide', form.self_guardian.checked);
     nodes.credentialsBox.classList.add('hide');
+
+    nodes.teacherPlanPreview.innerHTML = form.teacher_action_plan_md.value.trim()
+      ? `<div class="rich-text">${U.markdownLite(form.teacher_action_plan_md.value.trim())}</div>`
+      : '<p class="muted">Sem plano cadastrado.</p>';
   }
 
   function renderMiniLists(response) {
@@ -186,10 +226,20 @@
     `).join('') : '<p class="muted">Sem downloads.</p>';
   }
 
+  function renderDownloadPreview() {
+    const base = nodes.downloadForm.file_base_name.value.trim();
+    const type = nodes.downloadForm.file_type.value.trim();
+    const zipBase = nodes.downloadForm.pack_base_name.value.trim();
+    const fileName = base && type ? `${base}.${type}` : '';
+    nodes.filePreview.textContent = fileName ? `download/${fileName}` : 'download/arquivo.ext';
+    nodes.zipPreview.textContent = zipBase ? `download/${zipBase}.zip` : 'download/pacote.zip';
+  }
+
   async function saveStudent(event) {
     event.preventDefault();
     const form = nodes.studentForm;
     const button = form.querySelector('button[type="submit"]');
+
     const student = {
       student_id: form.student_id.value.trim(),
       full_name: form.full_name.value.trim(),
@@ -208,6 +258,7 @@
       stage_label: form.stage_label.value.trim(),
       recommended_exam: form.recommended_exam.value.trim()
     };
+
     const guardian = {
       guardian_id: form.guardian_id.value.trim(),
       full_name: form.guardian_full_name.value.trim(),
@@ -216,20 +267,28 @@
       relationship: form.guardian_relationship.value.trim()
     };
 
+    const teacher_plan = {
+      student_id: form.student_id.value.trim(),
+      teacher_action_plan_md: form.teacher_action_plan_md.value.trim()
+    };
+
     try {
       U.setLoading(button, true);
-      const response = await window.AppApi.post('adminSaveStudent', { token: state.token, student, guardian });
-      nodes.studentForm.student_id.value = response.student_id;
-      nodes.studentForm.guardian_id.value = response.guardian_id || '';
+      const response = await window.AppApi.post('adminSaveStudent', { token: state.token, student, guardian, teacher_plan });
+      form.student_id.value = response.student_id;
+      form.guardian_id.value = response.guardian_id || '';
       if (response.credentials) {
         nodes.credentialsBox.classList.remove('hide');
         nodes.credentialsText.textContent = `Usuário: ${response.credentials.username} | Senha: ${response.credentials.password}`;
       } else {
         nodes.credentialsBox.classList.add('hide');
       }
+      nodes.teacherPlanPreview.innerHTML = teacher_plan.teacher_action_plan_md
+        ? `<div class="rich-text">${U.markdownLite(teacher_plan.teacher_action_plan_md)}</div>`
+        : '<p class="muted">Sem plano cadastrado.</p>';
       U.toast('Cadastro salvo.', 'success');
+      state.currentStudentId = response.student_id;
       await loadAdmin();
-      await loadStudent(response.student_id);
     } catch (error) {
       U.toast(error.message, 'error');
     } finally {
@@ -241,12 +300,17 @@
     event.preventDefault();
     const form = nodes.performanceForm;
     const button = form.querySelector('button[type="submit"]');
+    const studentId = nodes.studentForm.student_id.value.trim();
+    if (!studentId) {
+      U.toast('Salve o cadastro do aluno antes de lançar desempenho.', 'info');
+      return;
+    }
     try {
       U.setLoading(button, true);
       await window.AppApi.post('adminAddPerformance', {
         token: state.token,
         entry: {
-          student_id: nodes.studentForm.student_id.value.trim(),
+          student_id: studentId,
           assessment_date: form.assessment_date.value,
           score: form.score.value.trim(),
           label: form.label.value.trim(),
@@ -257,7 +321,7 @@
       });
       form.reset();
       U.toast('Desempenho salvo.', 'success');
-      await loadStudent(nodes.studentForm.student_id.value.trim());
+      await loadStudent(studentId);
     } catch (error) {
       U.toast(error.message, 'error');
     } finally {
@@ -269,12 +333,17 @@
     event.preventDefault();
     const form = nodes.activityForm;
     const button = form.querySelector('button[type="submit"]');
+    const studentId = nodes.studentForm.student_id.value.trim();
+    if (!studentId) {
+      U.toast('Salve o cadastro do aluno antes de cadastrar atividades.', 'info');
+      return;
+    }
     try {
       U.setLoading(button, true);
       await window.AppApi.post('adminSaveActivity', {
         token: state.token,
         activity: {
-          student_id: nodes.studentForm.student_id.value.trim(),
+          student_id: studentId,
           week_label: form.week_label.value.trim(),
           due_date: form.due_date.value,
           title: form.title.value.trim(),
@@ -284,8 +353,9 @@
         }
       });
       form.reset();
+      form.status.value = 'Pendente';
       U.toast('Atividade salva.', 'success');
-      await loadStudent(nodes.studentForm.student_id.value.trim());
+      await loadStudent(studentId);
     } catch (error) {
       U.toast(error.message, 'error');
     } finally {
@@ -297,23 +367,37 @@
     event.preventDefault();
     const form = nodes.downloadForm;
     const button = form.querySelector('button[type="submit"]');
+    const studentId = nodes.studentForm.student_id.value.trim();
+    if (!studentId) {
+      U.toast('Salve o cadastro do aluno antes de cadastrar downloads.', 'info');
+      return;
+    }
+
+    const fileBase = form.file_base_name.value.trim();
+    const fileType = form.file_type.value.trim();
+    if (!fileBase || !fileType) {
+      U.toast('Informe nome do arquivo e tipo.', 'info');
+      return;
+    }
+
     try {
       U.setLoading(button, true);
       await window.AppApi.post('adminSaveDownload', {
         token: state.token,
         download: {
-          student_id: nodes.studentForm.student_id.value.trim(),
+          student_id: studentId,
           title: form.title.value.trim(),
           description: form.description.value.trim(),
-          file_name: form.file_name.value.trim(),
-          file_url: form.file_url.value.trim(),
+          file_base_name: fileBase,
+          file_type: fileType,
           pack_name: form.pack_name.value.trim(),
-          pack_zip_url: form.pack_zip_url.value.trim()
+          pack_base_name: form.pack_base_name.value.trim()
         }
       });
       form.reset();
+      renderDownloadPreview();
       U.toast('Download salvo.', 'success');
-      await loadStudent(nodes.studentForm.student_id.value.trim());
+      await loadStudent(studentId);
     } catch (error) {
       U.toast(error.message, 'error');
     } finally {

@@ -16,6 +16,7 @@ window.AppApi = (() => {
       const callbackName = `__studentPortalCallback${Date.now()}_${callbackCounter++}`;
       const script = document.createElement('script');
       const search = new URLSearchParams({ action, callback: callbackName });
+
       Object.entries(params).forEach(([key, value]) => {
         if (value === undefined || value === null || value === '') return;
         if (typeof value === 'object') {
@@ -67,6 +68,7 @@ window.AppApi = (() => {
       }
       resolve(event.data.payload);
     });
+
     iframeReady = true;
   }
 
@@ -77,6 +79,7 @@ window.AppApi = (() => {
         reject(new Error('Já existe uma operação em andamento.'));
         return;
       }
+
       pendingPostResolver = { resolve, reject };
       const form = document.createElement('form');
       form.method = 'POST';
@@ -97,7 +100,7 @@ window.AppApi = (() => {
         if (!pendingPostResolver) return;
         pendingPostResolver = null;
         reject(new Error('A API demorou demais para responder.'));
-      }, 15000);
+      }, 20000);
     });
   }
 

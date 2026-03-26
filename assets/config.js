@@ -1,22 +1,6 @@
 window.APP_CONFIG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbxJWCtkUOewSnj_cgw7Y4KC421RmXCusr9mVvMe-LrzGci0XHmApC0g55nvLNI1kkAXCA/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbyFHeLOTh3UzSaDdM1QeKJDgdVNVJrYg9eBGRDh-jsVEDV_9vXXigCaBZTknMiBC3luDw/exec',
   DOWNLOAD_BASE_PATH: 'download/',
-  DEFAULT_DOWNLOADS: [
-    {
-      title: 'Nivelamento 1',
-      description: 'Arquivo de nivelamento disponível para consulta e impressão.',
-      file_name: 'nivelamento1.pdf',
-      file_url: 'download/nivelamento1.pdf',
-      pack_name: 'Pacote inicial',
-      pack_zip_url: 'download/atividades-concluidas.zip'
-    },
-    {
-      title: 'Atividade 1',
-      description: 'Atividade concluída disponível para download.',
-      file_name: 'atividade1.pdf',
-      file_url: 'download/atividade1.pdf',
-      pack_name: 'Pacote inicial',
-      pack_zip_url: 'download/atividades-concluidas.zip'
-    }
-  ]
+  CACHE_TTL_MS: 180000,
+  REFRESH_INTERVAL_MS: 90000
 };

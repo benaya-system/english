@@ -1,54 +1,56 @@
 (function () {
-  const { qs, qsa, hashPassword, saveSession, toast, setLoading } = window.AppUtils;
-  const guardianForm = qs('#guardian-login-form');
-  const adminForm = qs('#admin-login-form');
-  const tabButtons = qsa('.auth-tab');
-  const tabPanels = qsa('[data-auth-panel]');
+  const U = window.AppUtils;
+  const guardianForm = U.qs('#guardian-login-form');
+  const adminForm = U.qs('#admin-login-form');
+  const tabs = U.qsa('.auth-tab');
+  const panels = U.qsa('[data-auth-panel]');
 
-  function activateTab(name) {
-    tabButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.authTab === name));
-    tabPanels.forEach((panel) => panel.classList.toggle('hide', panel.dataset.authPanel !== name));
+  if (guardianForm) {
+    guardianForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = guardianForm.querySelector('button[type="submit"]');
+      try {
+        U.setLoading(button, true);
+        const username = U.qs('[name="username"]', guardianForm).value.trim();
+        const password = U.qs('[name="password"]', guardianForm).value;
+        const password_hash = await U.hashPassword(password);
+        const response = await window.AppApi.get('loginGuardian', { username, password_hash });
+        U.saveSession({ token: response.token, role: response.role, guardian: response.guardian });
+        U.toast('Acesso liberado.', 'success');
+        window.location.href = 'app.html';
+      } catch (error) {
+        U.toast(error.message, 'error');
+      } finally {
+        U.setLoading(button, false);
+      }
+    });
   }
 
-  tabButtons.forEach((button) => {
-    button.addEventListener('click', () => activateTab(button.dataset.authTab));
-  });
+  if (adminForm) {
+    adminForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = adminForm.querySelector('button[type="submit"]');
+      try {
+        U.setLoading(button, true);
+        const username = U.qs('[name="username"]', adminForm).value.trim();
+        const password = U.qs('[name="password"]', adminForm).value;
+        const password_hash = await U.hashPassword(password);
+        const response = await window.AppApi.get('loginAdmin', { username, password_hash });
+        U.saveSession({ token: response.token, role: response.role, username: response.username });
+        U.toast('Acesso administrativo liberado.', 'success');
+        window.location.href = 'admin.html';
+      } catch (error) {
+        U.toast(error.message, 'error');
+      } finally {
+        U.setLoading(button, false);
+      }
+    });
+  }
 
-  guardianForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const button = guardianForm.querySelector('button[type="submit"]');
-    try {
-      setLoading(button, true);
-      const username = qs('[name="username"]', guardianForm).value.trim();
-      const password = qs('[name="password"]', guardianForm).value;
-      const password_hash = await hashPassword(password);
-      const response = await window.AppApi.get('loginGuardian', { username, password_hash });
-      saveSession({ token: response.token, role: response.role, guardian: response.guardian, students: response.students });
-      window.location.href = 'app.html';
-    } catch (error) {
-      toast(error.message, 'error');
-    } finally {
-      setLoading(button, false);
-    }
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((item) => item.classList.toggle('is-active', item === tab));
+      panels.forEach((panel) => panel.classList.toggle('hide', panel.dataset.authPanel !== tab.dataset.authTab));
+    });
   });
-
-  adminForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const button = adminForm.querySelector('button[type="submit"]');
-    try {
-      setLoading(button, true);
-      const username = qs('[name="username"]', adminForm).value.trim();
-      const password = qs('[name="password"]', adminForm).value;
-      const password_hash = await hashPassword(password);
-      const response = await window.AppApi.get('loginAdmin', { username, password_hash });
-      saveSession({ token: response.token, role: response.role, username: response.username });
-      window.location.href = 'admin.html';
-    } catch (error) {
-      toast(error.message, 'error');
-    } finally {
-      setLoading(button, false);
-    }
-  });
-
-  activateTab('guardian');
 })();

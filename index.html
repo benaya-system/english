@@ -4,60 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Pedagógico</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css">
 </head>
-<body>
-  <div class="page-shell">
-    <header class="topbar">
+<body class="landing-body">
+  <div class="page-shell landing-shell">
+    <header class="topbar landing-topbar">
       <div class="brand">
         <div class="brand-mark">PP</div>
         <div>
+          <p class="brand-kicker">Acompanhamento pedagógico</p>
           <h1 class="brand-title">Portal Pedagógico</h1>
-          <p class="brand-subtitle">Acompanhamento do perfil, das atividades e da evolução do aluno.</p>
         </div>
       </div>
     </header>
 
-    <main class="auth-layout">
-      <section class="hero-card card reveal is-visible">
-        <div class="eyebrow">Acompanhamento individual</div>
-        <h2>Um espaço simples para acompanhar o desenvolvimento do aluno.</h2>
-        <p>
-          Aqui o responsável pode consultar o perfil pedagógico, visualizar a evolução de desempenho,
-          acompanhar as atividades da semana e baixar os materiais já concluídos.
+    <main class="landing-grid">
+      <section class="hero-card reveal is-visible">
+        <p class="eyebrow">Ambiente de acompanhamento</p>
+        <h2>Perfil, progresso e materiais em um só lugar.</h2>
+        <p class="hero-text">
+          O responsável acompanha o perfil pedagógico do aluno, consulta as atividades da semana
+          e baixa os materiais disponíveis com poucos toques no celular.
         </p>
-        <div class="feature-grid">
-          <div class="feature-item">
-            <strong>Perfil pedagógico</strong>
-            <span>Leitura clara, organizada e pensada para consulta rápida.</span>
+        <div class="hero-points">
+          <div class="hero-point">
+            <strong>Perfil organizado</strong>
+            <span>Leitura clara para consulta rápida.</span>
           </div>
-          <div class="feature-item">
-            <strong>Evolução do aluno</strong>
-            <span>Visualização objetiva do progresso e do estágio atual.</span>
+          <div class="hero-point">
+            <strong>Desempenho</strong>
+            <span>Evolução visual em linha do tempo.</span>
           </div>
-          <div class="feature-item">
-            <strong>Atividades da semana</strong>
-            <span>Lista simples com prazo, orientação e apoio quando necessário.</span>
+          <div class="hero-point">
+            <strong>Atividades</strong>
+            <span>Rotina semanal objetiva.</span>
           </div>
-          <div class="feature-item">
-            <strong>Materiais para download</strong>
-            <span>Arquivos disponíveis para baixar pelo celular, um a um ou em pacote.</span>
+          <div class="hero-point">
+            <strong>Downloads</strong>
+            <span>Arquivos individuais ou pacote completo.</span>
           </div>
         </div>
       </section>
 
-      <section class="form-card card reveal is-visible">
+      <section class="auth-card reveal is-visible">
         <div class="auth-tabs">
-          <button class="auth-tab is-active" data-auth-tab="guardian" type="button">Acesso do responsável</button>
-          <button class="auth-tab" data-auth-tab="admin" type="button">Acesso administrativo</button>
+          <button class="auth-tab is-active" data-auth-tab="guardian" type="button">Responsável</button>
+          <button class="auth-tab" data-auth-tab="admin" type="button">Administração</button>
         </div>
 
-        <div data-auth-panel="guardian">
-          <h3>Entrar como responsável</h3>
-          <p>Usuário: primeiro nome em minúsculo. Senha: primeiro nome + @ + ano de inscrição.</p>
+        <section data-auth-panel="guardian">
+          <h3>Acesso do responsável</h3>
+          <p class="muted">
+            Usuário: primeiro nome em minúsculo. Senha: primeiro nome seguido de @ e ano de inscrição.
+          </p>
           <form id="guardian-login-form" class="field-grid">
             <label class="field">
               <span class="field-label">Usuário</span>
@@ -71,11 +70,11 @@
               <button class="button" type="submit">Entrar</button>
             </div>
           </form>
-        </div>
+        </section>
 
-        <div data-auth-panel="admin" class="hide">
-          <h3>Entrar na área administrativa</h3>
-          <p>Use este acesso para cadastrar alunos, responsáveis, atividades, downloads e registros de desempenho.</p>
+        <section data-auth-panel="admin" class="hide">
+          <h3>Acesso administrativo</h3>
+          <p class="muted">Use seu usuário e sua senha de administrador.</p>
           <form id="admin-login-form" class="field-grid">
             <label class="field">
               <span class="field-label">Usuário</span>
@@ -89,7 +88,7 @@
               <button class="button" type="submit">Entrar</button>
             </div>
           </form>
-        </div>
+        </section>
       </section>
     </main>
   </div>

@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Pedagógico - Administração</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -15,19 +12,18 @@
       <div class="brand">
         <div class="brand-mark">PP</div>
         <div>
-          <h1 class="brand-title">Área administrativa</h1>
-          <p class="brand-subtitle">Cadastro de alunos, responsáveis, desempenho, atividades e downloads.</p>
+          <p class="brand-kicker">Administração</p>
+          <h1 class="brand-title">Cadastro pedagógico</h1>
         </div>
       </div>
-      <div class="button-row">
+      <div class="button-row topbar-actions">
         <a class="ghost-button" href="index.html">Voltar</a>
         <button class="ghost-button" type="button" id="admin-logout-button">Sair</button>
       </div>
     </header>
 
-    <section id="admin-login-gate" class="card panel hide" style="max-width: 480px; margin: 40px auto;">
-      <h2 style="margin-top: 0;">Entrar na área administrativa</h2>
-      <p class="muted">Use o login de administrador. O setup inicial cria admin / admin@2026.</p>
+    <section id="admin-login-gate" class="card panel hide admin-login-card">
+      <h2>Entrar na área administrativa</h2>
       <form id="admin-login-inline" class="field-grid">
         <label class="field">
           <span class="field-label">Usuário</span>
@@ -44,10 +40,11 @@
     </section>
 
     <main id="admin-app" class="admin-grid hide">
-      <aside class="admin-column">
+      <aside class="admin-column admin-sidebar">
         <section class="list-card">
           <div class="section-title">
-            <h3>Alunos cadastrados</h3>
+            <h3>Alunos</h3>
+            <button class="soft-button soft-button-small" type="button" id="new-student-button">Novo aluno</button>
           </div>
           <input class="input student-search" id="student-search" placeholder="Buscar aluno ou responsável">
           <div id="admin-student-list"></div>
@@ -55,12 +52,19 @@
 
         <section class="list-card">
           <div class="section-title">
-            <h3>Registros rápidos</h3>
+            <h3>Plano de ação do professor</h3>
+          </div>
+          <div id="teacher-plan-preview" class="mini-list"><p class="muted">Sem plano cadastrado.</p></div>
+        </section>
+
+        <section class="list-card">
+          <div class="section-title">
+            <h3>Registros recentes</h3>
           </div>
           <div id="performance-list" class="mini-list"></div>
-          <hr style="border:0; border-top:1px solid var(--border); margin: 18px 0;">
+          <hr class="divider">
           <div id="admin-activities-list" class="mini-list"></div>
-          <hr style="border:0; border-top:1px solid var(--border); margin: 18px 0;">
+          <hr class="divider">
           <div id="admin-downloads-list" class="mini-list"></div>
         </section>
       </aside>
@@ -71,20 +75,24 @@
             <div class="section-title"><h3>Cadastro do aluno</h3></div>
             <input type="hidden" name="student_id">
             <input type="hidden" name="guardian_id">
+
             <div class="columns-2">
               <label class="field"><span class="field-label">Nome completo do aluno</span><input class="input" name="full_name" required></label>
               <label class="field"><span class="field-label">Idade</span><input class="input" name="age"></label>
             </div>
+
             <div class="columns-3">
               <label class="field"><span class="field-label">Ano/série</span><input class="input" name="school_year"></label>
               <label class="field"><span class="field-label">Ano de inscrição</span><input class="input" name="year_of_enrollment" value="2026"></label>
               <label class="field"><span class="field-label">Foto (URL)</span><input class="input" name="photo_url"></label>
             </div>
+
             <div class="columns-2">
               <label class="field"><span class="field-label">E-mail do aluno</span><input class="input" name="email"></label>
               <label class="field"><span class="field-label">Telefone do aluno</span><input class="input" name="phone"></label>
             </div>
-            <label class="checkbox-line"><input type="checkbox" id="self_guardian" name="self_guardian"> O aluno é responsável por si mesmo e usará seus próprios dados como responsável</label>
+
+            <label class="checkbox-line"><input type="checkbox" id="self_guardian" name="self_guardian"> O aluno é responsável por si mesmo</label>
           </section>
 
           <section class="inline-card" id="guardian-fields">
@@ -97,20 +105,26 @@
               <label class="field"><span class="field-label">E-mail do responsável</span><input class="input" name="guardian_email"></label>
               <label class="field"><span class="field-label">Telefone do responsável</span><input class="input" name="guardian_phone"></label>
             </div>
-            <p class="helper-text">Ao salvar, o sistema gera automaticamente o usuário e a senha pelo padrão solicitado.</p>
+            <p class="helper-text">Ao salvar, o acesso do responsável é gerado no padrão combinado.</p>
           </section>
 
           <section class="inline-card">
             <div class="section-title"><h3>Perfil pedagógico</h3></div>
             <label class="field"><span class="field-label">Título da aba</span><input class="input" name="pedagogical_title" value="Perfil pedagógico"></label>
             <label class="field"><span class="field-label">Resumo curto</span><textarea class="textarea" name="pedagogical_summary"></textarea></label>
-            <label class="field"><span class="field-label">Perfil completo em markdown leve</span><textarea class="textarea" name="pedagogical_profile_md" style="min-height: 280px;"></textarea></label>
-            <label class="field"><span class="field-label">Destaques para impressão em uma página</span><textarea class="textarea" name="print_highlights_md"></textarea></label>
+            <label class="field"><span class="field-label">Perfil completo</span><textarea class="textarea textarea-lg" name="pedagogical_profile_md"></textarea></label>
+            <label class="field"><span class="field-label">Destaques para o relatório impresso</span><textarea class="textarea" name="print_highlights_md"></textarea></label>
             <div class="columns-2">
               <label class="field"><span class="field-label">Estágio atual</span><input class="input" name="stage_label"></label>
               <label class="field"><span class="field-label">Prova Cambridge sugerida</span><input class="input" name="recommended_exam"></label>
             </div>
-            <div id="generated-credentials" class="checkbox-line hide"><strong>Credenciais geradas:</strong> <span id="generated-credentials-text"></span></div>
+          </section>
+
+          <section class="inline-card">
+            <div class="section-title"><h3>Plano de ação do professor</h3></div>
+            <p class="muted">Este campo é privado e não aparece para os responsáveis.</p>
+            <label class="field"><span class="field-label">Orientações internas</span><textarea class="textarea textarea-lg" name="teacher_action_plan_md"></textarea></label>
+            <div id="generated-credentials" class="credentials-box hide"><strong>Credenciais geradas:</strong> <span id="generated-credentials-text"></span></div>
             <div class="button-row">
               <button class="button" type="submit">Salvar cadastro</button>
             </div>
@@ -154,13 +168,31 @@
           <form id="download-form" class="field-grid">
             <label class="field"><span class="field-label">Título</span><input class="input" name="title"></label>
             <label class="field"><span class="field-label">Descrição</span><textarea class="textarea" name="description"></textarea></label>
-            <div class="columns-2">
-              <label class="field"><span class="field-label">Nome do arquivo</span><input class="input" name="file_name"></label>
-              <label class="field"><span class="field-label">URL do arquivo</span><input class="input" name="file_url"></label>
+            <div class="columns-3">
+              <label class="field"><span class="field-label">Nome do arquivo</span><input class="input" name="file_base_name" placeholder="nivelamento1"></label>
+              <label class="field"><span class="field-label">Tipo</span>
+                <select class="input" name="file_type">
+                  <option value="pdf">pdf</option>
+                  <option value="docx">docx</option>
+                  <option value="xlsx">xlsx</option>
+                  <option value="doc">doc</option>
+                  <option value="zip">zip</option>
+                  <option value="pptx">pptx</option>
+                  <option value="png">png</option>
+                  <option value="jpg">jpg</option>
+                </select>
+              </label>
+              <label class="field"><span class="field-label">Pacote ZIP (opcional)</span><input class="input" name="pack_base_name" placeholder="atividades-concluidas"></label>
             </div>
             <div class="columns-2">
-              <label class="field"><span class="field-label">Nome do pacote ZIP</span><input class="input" name="pack_name"></label>
-              <label class="field"><span class="field-label">URL do pacote ZIP</span><input class="input" name="pack_zip_url"></label>
+              <label class="field"><span class="field-label">Nome do pacote</span><input class="input" name="pack_name" placeholder="Pacote da semana"></label>
+              <div class="field">
+                <span class="field-label">Prévia do caminho</span>
+                <div class="path-preview">
+                  <div id="download-file-preview">download/arquivo.ext</div>
+                  <div id="download-zip-preview">download/pacote.zip</div>
+                </div>
+              </div>
             </div>
             <div class="button-row"><button class="soft-button" type="submit">Salvar download</button></div>
           </form>

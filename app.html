@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Pedagógico - Perfil do Aluno</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="page-shell dashboard-shell">
+    <header class="topbar no-print">
+      <div class="brand">
+        <div class="brand-mark">PP</div>
+        <div>
+          <p class="brand-kicker">Portal Pedagógico</p>
+          <h1 class="brand-title">Perfil do aluno</h1>
+        </div>
+      </div>
+      <div class="button-row topbar-actions">
+        <span class="meta-pill">Responsável: <strong id="guardian-name">...</strong></span>
+        <button class="ghost-button" type="button" id="logout-button">Sair</button>
+      </div>
+    </header>
+
+    <section class="hero-banner reveal is-visible">
+      <div class="hero-copy">
+        <p class="eyebrow">Acompanhamento individual</p>
+        <h2 id="student-name">Carregando...</h2>
+        <p id="student-summary" class="hero-text">Aguarde enquanto o perfil é carregado.</p>
+        <div class="hero-meta">
+          <span class="meta-pill" id="student-meta">--</span>
+          <span class="meta-pill">Perfil, desempenho e materiais</span>
+        </div>
+      </div>
+      <div class="avatar-floating no-print">
+        <div class="avatar-ring">
+          <img id="student-avatar" class="hide" alt="Foto do aluno">
+          <div id="student-avatar-fallback" class="avatar-fallback">--</div>
+        </div>
+      </div>
+    </section>
+
+    <main class="main-grid">
+      <aside class="sidebar no-print">
+        <section class="list-card reveal">
+          <div class="section-title">
+            <h3>Alunos vinculados</h3>
+          </div>
+          <div id="student-list"></div>
+        </section>
+
+        <section class="info-card reveal">
+          <div class="section-title">
+            <h3>Impressão</h3>
+          </div>
+          <p>Gere uma versão em relatório para imprimir ou salvar em PDF.</p>
+          <div class="button-row">
+            <button class="soft-button" type="button" id="print-profile-button">Imprimir perfil</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="tab-panel reveal">
+        <div class="tab-strip no-print">
+          <button class="tab-button is-active" data-tab="perfil" type="button">Perfil pedagógico</button>
+          <button class="tab-button" data-tab="atividades" type="button">Atividades</button>
+          <button class="tab-button" data-tab="downloads" type="button">Downloads</button>
+        </div>
+
+        <div class="tab-content is-active" id="tab-perfil">
+          <div class="profile-grid">
+            <div class="profile-top">
+              <section class="summary-card" id="summary-card"></section>
+
+              <section class="graph-card">
+                <div class="section-title">
+                  <h3>Evolução do aluno</h3>
+                  <span class="badge">Desempenho</span>
+                </div>
+                <div class="graph-wrap" id="graph-wrap"></div>
+                <div class="graph-meta">
+                  <div class="metric-box">
+                    <span class="metric-label">Estágio atual</span>
+                    <span class="metric-value" id="graph-stage">--</span>
+                  </div>
+                  <div class="metric-box">
+                    <span class="metric-label">Prova Cambridge sugerida</span>
+                    <span class="metric-value" id="graph-exam">--</span>
+                  </div>
+                  <div class="metric-box metric-box-wide">
+                    <span class="metric-label">Observação</span>
+                    <span class="metric-value" id="graph-note">--</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <section class="inline-card">
+              <div class="section-title">
+                <h3>Perfil pedagógico completo</h3>
+              </div>
+              <div id="profile-rich-text"></div>
+            </section>
+
+            <section class="print-only print-sheet">
+              <div class="print-header-bar">
+                <div>
+                  <p class="print-kicker">Relatório pedagógico</p>
+                  <h1 id="print-name"></h1>
+                  <p id="print-meta"></p>
+                </div>
+                <div class="print-date-block">
+                  <span>Emitido em</span>
+                  <strong id="print-date"></strong>
+                </div>
+              </div>
+
+              <div class="print-hero-grid">
+                <section class="print-card print-identification">
+                  <div id="print-photo" class="print-photo"></div>
+                  <div class="print-identity-text">
+                    <div class="print-chip-row">
+                      <div class="print-chip"><strong>Estágio</strong><span id="print-stage"></span></div>
+                      <div class="print-chip"><strong>Cambridge</strong><span id="print-exam"></span></div>
+                    </div>
+                    <p id="print-summary"></p>
+                  </div>
+                </section>
+
+                <section class="print-card print-graph-card">
+                  <div class="print-card-head">
+                    <h3>Evolução de desempenho</h3>
+                  </div>
+                  <div id="print-graph"></div>
+                  <p id="print-note"></p>
+                </section>
+              </div>
+
+              <section class="print-card print-summary-card">
+                <h3>Leitura pedagógica</h3>
+                <p id="print-overview"></p>
+              </section>
+
+              <div class="print-triad">
+                <section class="print-card">
+                  <h3>Como ela aprende melhor</h3>
+                  <div id="print-strategies"></div>
+                </section>
+                <section class="print-card">
+                  <h3>Feedback mais adequado</h3>
+                  <div id="print-feedback"></div>
+                </section>
+                <section class="print-card">
+                  <h3>Cuidados essenciais</h3>
+                  <div id="print-avoid"></div>
+                </section>
+              </div>
+
+              <section class="print-card print-highlights-card">
+                <h3>Destaques rápidos</h3>
+                <div id="print-highlights" class="print-highlights-grid"></div>
+              </section>
+            </section>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-atividades">
+          <section class="inline-card">
+            <div class="section-title">
+              <h3>Atividades da semana</h3>
+              <span class="badge">Planejamento</span>
+            </div>
+            <div id="activities-list" class="activity-list"></div>
+          </section>
+        </div>
+
+        <div class="tab-content" id="tab-downloads">
+          <section class="inline-card">
+            <div class="section-title">
+              <h3>Downloads</h3>
+              <span class="badge">Materiais</span>
+            </div>
+            <p class="muted">Baixe arquivos individuais, todos os itens visíveis ou o pacote ZIP quando ele estiver disponível.</p>
+            <div class="button-row no-print download-actions">
+              <button class="soft-button" type="button" id="download-selected-button">Baixar marcados</button>
+              <button class="ghost-button" type="button" id="download-all-button">Baixar todos</button>
+              <button class="ghost-button hide" type="button" id="download-package-button">Baixar pacote ZIP</button>
+            </div>
+            <div id="downloads-list" class="download-list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/utils.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

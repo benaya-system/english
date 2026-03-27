@@ -38,10 +38,14 @@ img {
   display: block;
 }
 
-.brand-logo{
-  height: 44px;
-  width: auto;
-}
+.brand-logo,
+  .logo,
+  .header-logo {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 12px !important;
+  }
 
 a {
   color: var(--accent);
